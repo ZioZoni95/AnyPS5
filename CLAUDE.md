@@ -40,6 +40,26 @@ Gia' implementate nel frattempo: sceCustomMusicAudioOut*, sceLoginServiceRequest
 Con PR aperte (da evitare): libSceFios2, libSceFontGs, libSceHidControl, libSceImeDialog, libSceNpEulaDialog, libSceNpPartnerSubscription, libSceOpusCeltDec, libScePlayGo, libScePosixForWebKit, libSceRudp.
 Attenzione: la ricerca copre solo i titoli delle PR; una PR puo' nominare la funzione solo nel corpo. Molte stub sono `Initialize` o `Terminate` con firma e comportamento non noti: il comportamento va ricavato da `docs/dev/REVERSE_ENGINEERING.md` (fonti in ordine di affidabilita') e, se non e' noto, la funzione lancia e si registra il debito.
 
+## Obiettivi del progetto (dedotti dai commit delle ultime 48 ore, non da una roadmap scritta)
+Copertura ampia e verificata delle librerie di sistema (libc, libkernel, libSceNKWebKit, LibreSsl3, Icu, MsgDialog, Jsc), uso di titoli reali (title_run) per scoprire cosa manca, test per ogni modifica (circa il 29% dei commit), grafica e shader a ritmo piu' basso, prestazioni ancora aperte (molti titoli a 1-4 FPS).
+
+## Metodo comune dei contributori
+1. Un export, spesso una stub, per un titolo che serve.
+2. Fonte del comportamento, in ordine: misura su console, codice del modulo del firmware, altre implementazioni, chiamate dei titoli.
+3. Firma vera e controllo degli argomenti con i codici d'errore del firmware; il resto lancia con `NotImplemented_nid_no_patch`.
+4. Un test che fissa i valori letti dal firmware.
+5. Un fragment di debito in `docs/dev/debt/changes/` (prima la lacuna, poi il comportamento).
+6. PR piccola, un argomento, template compilato. Esempio da imitare: commit `dfd3fc4914` (libSceVideoRecording.native, 5 file, circa 140 righe).
+
+## Decisione dell'utente (2026-11-20)
+Si fermano qui le sessioni remote: per leggere il firmware e usare i dump servono il PC, quindi il lavoro di codice riprende li'. Nessuna PR aperta, nessun branch di argomento creato. Su `upstream/main` ci sono centinaia di commit al giorno: sul PC fare prima `git fetch upstream` e ricontrollare lo stato delle librerie candidate.
+
+## Cosa serve sul PC
+- Dump del firmware e dei titoli ottenuti dalla propria console. Non vengono distribuiti dal progetto e non vanno messi in repo ne' in una PR.
+- `docs/dev/GAME_TESTING.md`: `tools/unwrap_self.py`, relinker con `--registry`, `tools/audit_dump.py`, `tools/import_audit.py`.
+- `docs/dev/REVERSE_ENGINEERING.md`: come leggere un modulo e come citare la fonte.
+- Build: `docs/dev/BUILD.md`; per il relinker basta `-DANYPS5_RELINKER_ONLY=ON`.
+
 ## Prossimi passi
 1. Scegliere una funzione dall'elenco, ricontrollare overlap e stato su `upstream/main`.
 2. Leggere la libreria piccola e il suo file in `docs/dev/debt/` per il formato.
